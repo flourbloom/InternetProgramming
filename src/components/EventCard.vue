@@ -8,7 +8,9 @@ const props = defineProps<({
   event: CampusEvent
 })>()
 // TODO 2: declare an event `book` that sends the event id (defineEmits)
-const emit = defineEmits<{(e: 'book', id: number): void}>()
+const emit = defineEmits<({
+  book: [number]
+})>()
 // TODO 3: computed values
 //   left       -> seats left (use seatsLeft)
 const left = computed(() => seatsLeft(props.event))
@@ -29,10 +31,13 @@ const almostFull = computed(() => left.value >= 1 && left.value <= 5)
     <!-- TODO 6: when full, show only <p class="badge">Full</p>.
          Otherwise show "N seats left" ("1 seat left" for one seat),
          with the class "warn" when almost full. Use v-if / v-else. -->
-    <p class="seats">3 seats left</p>
+    <p v-if="isFull" class="badge">Full</p>
+    <p v-else class="seats" :class="{ warn: almostFull }">
+      {{ left }} {{ left === 1 ? 'seat' : 'seats' }} left
+    </p>
 
     <!-- TODO 7: disable the button when full; on click, emit "book" with the event id -->
-    <button>Book a seat</button>
+    <button :disabled="isFull" @click="emit('book', props.event.id)">Book a seat</button>
   </article>
 </template>
 
